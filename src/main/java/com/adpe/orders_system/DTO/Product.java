@@ -16,4 +16,12 @@ public class Product {
     public String sku;
     public int stock;
     public double price;
+
+    public Product(String name, String description, String sku, int stock, double price) {
+        this.name = name;
+        this.description = description;
+        this.sku = sku;
+        this.stock = stock;
+        this.price = price;
+    }
 }

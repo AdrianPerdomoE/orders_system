@@ -1,0 +1,8 @@
+SECRET_KEY  =  valor secreto para el JWT
+DATABASE = orders_system
+USERNAME = Nombre de usuario de la base de datos
+MONGO_PASSWORD = contraseña de la base de datos
+MONGO_URI = String de conexion a la base de datos para Spring boot
+REDIS_HOST = redis
+REDIS_PORT = 6379
+REDIS_PASSWORD = contraseña de redis
