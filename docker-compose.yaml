@@ -1,13 +1,40 @@
+version: '3.8'
+
 services:
-  mongodb:
-    image: 'mongo:latest'
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/adriandavidperdomoe/orders_system/app:latest
     environment:
-      - 'MONGO_INITDB_DATABASE=mydatabase'
-      - 'MONGO_INITDB_ROOT_PASSWORD=secret'
-      - 'MONGO_INITDB_ROOT_USERNAME=root'
+      - SECRET_KEY=${SECRET_KEY}
+      - EXPIRATION_TIME=${EXPIRATION_TIME}
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DOCKER_ENV=${DOCKER_ENV}
     ports:
-      - '27017'
+      - "8080:8080"
+
+  mongodb:
+    build:
+      context: ./mongodb
+      dockerfile: Dockerfile
+    image: ghcr.io/adriandavidperdomoe/orders_system/mongodb:latest
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - "27017:27017"
+
   redis:
-    image: 'redis:latest'
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+    image: ghcr.io/adriandavidperdomoe/orders_system/redis:latest
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     ports:
-      - '6379'
+      - "6379:6379"
