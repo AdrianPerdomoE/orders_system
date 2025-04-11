@@ -1,5 +1,5 @@
 # Etapa 1: Construcción de la aplicación
-FROM gradle:8.13-jdk24 AS build
+FROM ggradle:8.2-jdk17 AS build
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ COPY src /app/src
 RUN gradle build --no-daemon
 
 # Etapa 2: Imagen final para ejecutar la aplicación
-FROM openjdk:24-jdk-slim
+FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
