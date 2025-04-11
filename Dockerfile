@@ -14,7 +14,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 COPY --from=build /app/build/libs/*.jar app.jar
-
+LABEL org.opencontainers.image.source https://github.com/adrianperdomoe/orders_system
 # Configurar las variables de entorno desde los argumentos de construcción
 
 ARG EXPIRATION_TIME
