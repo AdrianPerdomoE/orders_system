@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ghcr.io/adriandavidperdomoe/orders_system/app:latest
+    image: ghcr.io/adrianperdomoe/orders_system/app:latest
     ports:
       - "8080:8080"
 
@@ -13,7 +13,7 @@ services:
     build:
       context: ./mongoDB
       dockerfile: Dockerfile
-    image: ghcr.io/adriandavidperdomoe/orders_system/mongodb:latest
+    image: ghcr.io/adrianperdomoe/orders_system/mongodb:latest
     ports:
       - "27017:27017"
 
@@ -21,6 +21,6 @@ services:
     build:
       context: ./redis
       dockerfile: Dockerfile
-    image: ghcr.io/adriandavidperdomoe/orders_system/redis:latest
+    image: ghcr.io/adrianperdomoe/orders_system/redis:latest
     ports:
       - "6379:6379"
