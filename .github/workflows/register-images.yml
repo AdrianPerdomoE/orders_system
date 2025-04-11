@@ -62,7 +62,7 @@ jobs:
 
       # Subir el archivo docker-compose.yml como artefacto
       - name: Upload docker-compose.yml
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-compose
           path: docker-compose.yml
