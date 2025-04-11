@@ -8,7 +8,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
+    environment: Build # Define el entorno
     steps:
       # Checkout del repositorio
       - name: Checkout repository
@@ -32,9 +32,9 @@ jobs:
                                --build-arg REDIS_PORT=${{ secrets.REDIS_PORT }} \
                                --build-arg REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
                                --build-arg DOCKER_ENV=${{ secrets.DOCKER_ENV }} \
-                               --build-arg MONGO_INITDB_DATABASE=${{ secrets.MONGO_INITDB_DATABASE }} \
-                               --build-arg MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }} \
-                               --build-arg MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+                               --build-arg DATABASE=${{ secrets.DATABASE }} \
+                               --build-arg USERNAME=${{ secrets.USERNAME }} \
+                               --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
           docker compose push
 
       # Generar el archivo docker-compose.yml limpio
