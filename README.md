@@ -18,5 +18,5 @@
 [🔗 Ver diagrama en Draw.io](https://app.diagrams.net/#G1v-2egTh279Uh33IUOpJGmT3j4a6Ld7kJ#%7B%22pageId%22%3A%22C5RBs43oDa-KdzZeNtuy%22%7D)
 
 # ¿ Comó utilizar la implementación?
-> Puedes acceder de manera sencilla a la solución implementada sin necesidad de clonar el respositorio, simplemente entra en el release: [🔗 Docker Compose Release]( https://github.com/AdrianPerdomoE/orders_system/releases), ahi encontraras el archivo docker-compose.yml, asegurate de tener docker instalado en tu maquina, corre el comando y una vez construidas las imagene, podras acceder a la documentación de la API en [🔗Swagger ](http://localhost:8080/swagger-ui/index.html)
+> Puedes acceder de manera sencilla a la solución implementada sin necesidad de clonar el respositorio, simplemente entra en el release: [🔗 Docker Compose Release]( https://github.com/AdrianPerdomoE/orders_system/releases), ahi encontraras el archivo docker-compose.yml, asegurate de tener docker instalado en tu maquina, corre el comando y una vez montadas las imagenes y los contenedores esten funcionando, podras acceder a la documentación de la API en [🔗Swagger ](http://localhost:8080/swagger-ui/index.html)
  
