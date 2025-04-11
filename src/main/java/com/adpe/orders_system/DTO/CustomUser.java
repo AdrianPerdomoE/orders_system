@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User {
+public class CustomUser {
     @Id
     public String _id;
     public String name;

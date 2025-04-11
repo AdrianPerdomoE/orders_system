@@ -1,37 +1,41 @@
 package com.adpe.orders_system.service;
 
-import com.adpe.orders_system.DTO.User;
+import com.adpe.orders_system.DTO.CustomUser;
 import com.adpe.orders_system.DTO.CustomQuery;
 import com.adpe.orders_system.error.NotFoundError;
 import com.adpe.orders_system.repository.AbstractRepository;
 import com.adpe.orders_system.repository.UserMongoRepository;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 
 
 @Service
-public class UserService extends AbstractService<User> {
+public class UserService extends AbstractService<CustomUser> {
 
-    private final AbstractRepository<User> userRepository;
-
-    public UserService(UserMongoRepository userRepository) {
+    private final AbstractRepository<CustomUser> userRepository;
+    private final PasswordEncoder passwordEncoder;
+    public UserService(UserMongoRepository userRepository,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    protected AbstractRepository<User> getRepository() {
+    protected AbstractRepository<CustomUser> getRepository() {
         return userRepository;
     }
 
     @Override
-    public User create(User entity) {
+    public CustomUser create(CustomUser entity) {
+        entity.setPassword(passwordEncoder.encode(entity.getPassword())); // Encripta la contraseña
         return getRepository().create(entity);       
     }
 
     @Override
-    public User getById(String id) {
-        User user = getRepository().getById(id);
+    public CustomUser getById(String id) {
+        CustomUser user = getRepository().getById(id);
         if (user == null) {
             throw new NotFoundError("User with ID " + id + " not found");
         }
@@ -39,8 +43,8 @@ public class UserService extends AbstractService<User> {
     }
 
     @Override
-    public User getOne(CustomQuery query) {
-        User user = getRepository().getOne(query);
+    public CustomUser getOne(CustomQuery query) {
+        CustomUser user = getRepository().getOne(query);
         if (user == null) {
             throw new NotFoundError("User not found for query: " + query);
         }
@@ -48,8 +52,8 @@ public class UserService extends AbstractService<User> {
     }
 
     @Override
-    public List<User> getMany(CustomQuery query) {
-        List<User> users =  getRepository().getMany(query);
+    public List<CustomUser> getMany(CustomQuery query) {
+        List<CustomUser> users =  getRepository().getMany(query);
         if (users == null || users.isEmpty()) {
             throw new NotFoundError("No users found for query: " + query);
         }
@@ -57,7 +61,7 @@ public class UserService extends AbstractService<User> {
     }
 
     @Override
-    public User updateOne(String id, User entity) {
+    public CustomUser updateOne(String id, CustomUser entity) {
         if (getRepository().getById(id) == null) {
             throw new NotFoundError("User with ID " + id + " not found");
         }

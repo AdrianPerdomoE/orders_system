@@ -1,6 +1,6 @@
 package com.adpe.orders_system.controller;
 
-import com.adpe.orders_system.DTO.User;
+import com.adpe.orders_system.DTO.CustomUser;
 import com.adpe.orders_system.error.UnExpectedArgumentError;
 import com.adpe.orders_system.DTO.CustomQuery;
 import com.adpe.orders_system.DTO.ResponseDTO;
@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "Usuarios", description = "Endpoints para gestionar usuarios")
 @CrossOrigin(origins = "*")
 // @CrossOrigin(origins = "http://localhost:3000") // Uncomment this line to restrict CORS to a specific origin
-public class UserController extends AbstractController<User> {
+public class UserController extends AbstractController<CustomUser> {
 
     private final UserService userService;
 
@@ -35,56 +35,56 @@ public class UserController extends AbstractController<User> {
     @PostMapping("/")
     @Operation(summary = "Crear usuarios", description = "Crear un nuevo usuario en el sistema de ordenes") 
     @Override
-    public ResponseDTO<User> create(@Valid @RequestBody User requestBody) {
+    public ResponseDTO<CustomUser> create(@Valid @RequestBody CustomUser requestBody) {
         if (requestBody.get_id() != null) {
             throw new  UnExpectedArgumentError("ID should not be provided when creating a new user.");
         }
 
-        User newUser  = getService().create(requestBody);
+        CustomUser newUser  = getService().create(requestBody);
 
         if (newUser == null) {
-            return new ResponseDTO<User>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create user", null);
+            return new ResponseDTO<CustomUser>(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create user", null);
         }
 
-        return new ResponseDTO<User>(true,HttpStatus.CREATED.value(), "User created successfully", newUser);
+        return new ResponseDTO<CustomUser>(true,HttpStatus.CREATED.value(), "User created successfully", newUser);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener Usuario", description = "Obtener un usuario por su ID") 
     @Override
-    public ResponseDTO<User> getById(@PathVariable String id) {
-        User user = getService().getById(id);
-        return new ResponseDTO<User>(true,HttpStatus.OK.value(), "User found", user);
+    public ResponseDTO<CustomUser> getById(@PathVariable String id) {
+        CustomUser user = getService().getById(id);
+        return new ResponseDTO<CustomUser>(true,HttpStatus.OK.value(), "User found", user);
     }
 
     @PostMapping("/query/one")
     @Operation(summary = "Obtener Usuario", description = "Obtener un usuario por un query")
     @Override
-    public ResponseDTO<User> getOne(@Valid @RequestBody CustomQuery requestBody) {
+    public ResponseDTO<CustomUser> getOne(@Valid @RequestBody CustomQuery requestBody) {
         requestBody.setLimit(1); // Set limit to 1 for single user retrieval
-        User user = getService().getOne(requestBody);
+        CustomUser user = getService().getOne(requestBody);
         return new ResponseDTO<>(true, HttpStatus.OK.value(), "User found", user);
     }
 
     @PostMapping("/query/many")
     @Operation(summary = "Obtener Usuarios", description = "Obtener usuarios por un query")
     @Override
-    public ResponseDTO<List<User>> getMany(@Valid @RequestBody CustomQuery requestBody) {
-        List<User> users = getService().getMany(requestBody);
+    public ResponseDTO<List<CustomUser>> getMany(@Valid @RequestBody CustomQuery requestBody) {
+        List<CustomUser> users = getService().getMany(requestBody);
         return new ResponseDTO<>(true, HttpStatus.OK.value(), "Users found", users);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar Usuario", description = "Actualizar un usuario por su ID")
     @Override
-    public ResponseDTO<User> updateOne(@PathVariable String id, @Valid @RequestBody User requestBody) {
+    public ResponseDTO<CustomUser> updateOne(@PathVariable String id, @Valid @RequestBody CustomUser requestBody) {
         if (requestBody.get_id() != null) {
             throw new UnExpectedArgumentError("ID should not be provided when updating a user.");
         }
         if (id == null) {
             throw new UnExpectedArgumentError("ID should be provided when updating a user.");
         }
-        User updatedUser = getService().updateOne(id, requestBody);
+        CustomUser updatedUser = getService().updateOne(id, requestBody);
         return new ResponseDTO<>(true,HttpStatus.OK.value(),  "User updated successfully",updatedUser);
     }
 

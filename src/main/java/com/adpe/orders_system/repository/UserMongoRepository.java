@@ -1,5 +1,5 @@
 package com.adpe.orders_system.repository;
-import com.adpe.orders_system.DTO.User;
+import com.adpe.orders_system.DTO.CustomUser;
 import com.adpe.orders_system.DTO.CustomQuery;
 import com.adpe.orders_system.model.query.CustomQueryFactory;
 import com.mongodb.client.result.DeleteResult;
@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import java.util.List;
 
 @Repository
-public class UserMongoRepository extends AbstractRepository<User> {
+public class UserMongoRepository extends AbstractRepository<CustomUser> {
 
     private final MongoTemplate mongoTemplate;
     private final CustomQueryFactory queryBuilder;
@@ -32,34 +32,34 @@ public class UserMongoRepository extends AbstractRepository<User> {
     }
 
     @Override
-    public User create(User entity) {
+    public CustomUser create(CustomUser entity) {
         return mongoTemplate.insert(entity, getCollectionName());
     }
 
     @Override
-    public User getById(String id) {
-        return mongoTemplate.findById(id, User.class, getCollectionName());
+    public CustomUser getById(String id) {
+        return mongoTemplate.findById(id, CustomUser.class, getCollectionName());
     }
 
     @Override
-    public User getOne(CustomQuery query) {
+    public CustomUser getOne(CustomQuery query) {
         Query mongoQuery = (Query) getQueryBuilder().buildQuery(query);
-        return mongoTemplate.findOne(mongoQuery, User.class, getCollectionName());
+        return mongoTemplate.findOne(mongoQuery, CustomUser.class, getCollectionName());
     }
 
     @Override
-    public List<User> getMany(CustomQuery query) {
+    public List<CustomUser> getMany(CustomQuery query) {
         Query mongoQuery = (Query) queryBuilder.buildQuery(query);
-        return mongoTemplate.find(mongoQuery, User.class, getCollectionName());
+        return mongoTemplate.find(mongoQuery, CustomUser.class, getCollectionName());
     }
 
     @Override
-public User updateOne(String id, User entity) {
+public CustomUser updateOne(String id, CustomUser entity) {
     Query query = new Query(Criteria.where("_id").is(id));
    Update update = buildUpdateFromEntity(entity);
 
-    mongoTemplate.updateFirst(query, update, User.class, getCollectionName());
-    return mongoTemplate.findById(id, User.class, getCollectionName());
+    mongoTemplate.updateFirst(query, update, CustomUser.class, getCollectionName());
+    return mongoTemplate.findById(id, CustomUser.class, getCollectionName());
 }
 
 /**
@@ -68,7 +68,7 @@ public User updateOne(String id, User entity) {
  * @param entity La entidad desde la cual se construirán las actualizaciones.
  * @return Un objeto Update con los campos no nulos.
  */
-private Update buildUpdateFromEntity(User entity) {
+private Update buildUpdateFromEntity(CustomUser entity) {
     Update update = new Update();
 
     // Usar reflexión para iterar sobre los campos de la clase User
@@ -90,7 +90,7 @@ private Update buildUpdateFromEntity(User entity) {
     @Override
     public boolean deleteOne(String id) {
         Query query = new Query(Criteria.where("_id").is(id));
-        DeleteResult result = mongoTemplate.remove(query, User.class, getCollectionName());
+        DeleteResult result = mongoTemplate.remove(query, CustomUser.class, getCollectionName());
         return result.getDeletedCount() > 0;
     }
 }

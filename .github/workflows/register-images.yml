@@ -26,7 +26,6 @@ jobs:
       - name: Build and Push Images
         run: |
           docker compose build --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
-                               --build-arg EXPIRATION_TIME=${{ secrets.EXPIRATION_TIME }} \
                                --build-arg MONGO_URI=${{ secrets.MONGO_URI }} \
                                --build-arg REDIS_HOST=${{ secrets.REDIS_HOST }} \
                                --build-arg REDIS_PORT=${{ secrets.REDIS_PORT }} \

@@ -1,5 +1,5 @@
 # Etapa 1: Construcción de la aplicación
-FROM ggradle:8.2-jdk17 AS build
+FROM gradle:8.13-jdk17 AS build
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # Configurar las variables de entorno desde los argumentos de construcción
-ARG SECRET_KEY
+
 ARG EXPIRATION_TIME
 ARG MONGO_URI
 ARG REDIS_HOST
@@ -25,7 +25,6 @@ ARG REDIS_PASSWORD
 ARG DOCKER_ENV
 
 ENV SECRET_KEY=$SECRET_KEY
-ENV EXPIRATION_TIME=$EXPIRATION_TIME
 ENV MONGO_URI=$MONGO_URI
 ENV REDIS_HOST=$REDIS_HOST
 ENV REDIS_PORT=$REDIS_PORT
