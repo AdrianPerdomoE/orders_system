@@ -12,7 +12,7 @@ jobs:
     steps:
       # Checkout del repositorio
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Loguearse en GitHub Container Registry
       - name: Log in to GitHub Container Registry
@@ -65,3 +65,24 @@ jobs:
         with:
           name: docker-compose
           path: docker-compose.yml
+
+       # Generar un tag basado en la fecha
+      - name: Generate date-based tag
+        id: date_tag
+        run: echo "tag=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      # Crear un release y adjuntar el archivo docker-compose.yml
+      - name: Create Release
+        uses: ncipollo/release-action@v1.16.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: docker-compose-${{ env.tag }}
+          name: Docker Compose Release
+          artifacts: "docker-compose.yml"
+          body: |
+            This release contains the `docker-compose.yml` file for the project.
+
+            To use this file, download it and run the following command:
+
+            ```bash
+            docker-compose up
+            ```

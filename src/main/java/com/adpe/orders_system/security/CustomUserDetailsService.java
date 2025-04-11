@@ -1,5 +1,4 @@
 package com.adpe.orders_system.security;
-import javax.management.Query;
 import com.adpe.orders_system.model.query.Operator;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
