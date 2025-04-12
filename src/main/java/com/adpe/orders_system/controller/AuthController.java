@@ -30,7 +30,7 @@ public class AuthController {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.get("username"), request.get("password"))
         );
-        String token = jwtUtil.generateToken(request.get("username"));
+        String token = jwtUtil.generateToken();
         return ResponseEntity.ok(Map.of("token", token));
     }
 }

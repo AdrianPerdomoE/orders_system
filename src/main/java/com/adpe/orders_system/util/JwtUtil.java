@@ -3,6 +3,9 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.adpe.orders_system.DTO.CustomUser;
+
 import java.util.Date;
 import javax.crypto.SecretKey;
 
@@ -19,36 +22,36 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(CustomUser user) {
 
         return Jwts.builder()
             .issuedAt(new Date())
-            .subject(username)
-            .claim("role", "USER") // Ejemplo de agregar un rol
-            .claim("email", "user@example.com") // Ejemplo de agregar un correo electrónico
+            .subject(user.getName())
+            .claim("name", user.name) // nombre del usuario
+            .claim("role", user.getRol()) // agregar un rol
+            .claim("_id", user.get_id()) // _id del usuario
             .expiration(new Date(EXPIRATION_TIME + System.currentTimeMillis()))
             .signWith(getSigningKey())
             .compact();
     }
 
-    public String extractUsername(String token) {
-        return Jwts.parser()
+    public CustomUser extractPayload(String token) {
+        return (CustomUser) Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+                .getPayload();
     }
 
     public boolean validateToken(String token, String username) {
         try {
-            return extractUsername(token).equals(username) && !isTokenExpired(token);
+            return extractPayload(token).getName().equals(username) && !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return Jwts.parser() 
                 .verifyWith(getSigningKey())
                 .build()
