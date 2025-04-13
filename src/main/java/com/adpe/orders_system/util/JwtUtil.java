@@ -1,6 +1,8 @@
 package com.adpe.orders_system.util;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +45,13 @@ public class JwtUtil {
                 .getPayload();
     }
 
+    public boolean validateToken(String token) {
+        try {
+            return !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
     public boolean validateToken(String token, String username) {
         try {
             return extractPayload(token).getName().equals(username) && !isTokenExpired(token);

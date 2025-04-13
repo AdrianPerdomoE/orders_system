@@ -1,20 +1,22 @@
 package com.adpe.orders_system.DTO;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.adpe.orders_system.model.query.QueryProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mongodb.lang.Nullable;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class CustomQuery {
 
-        @NotNull
-        @NotEmpty
+        public CustomQuery() {
+                properties = new ArrayList<>();
+        }
+        
+        
         public List<QueryProperty> properties; // Array of query properties
         @Nullable
         public String orderBy; // Field to order by, by default is not set

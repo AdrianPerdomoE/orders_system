@@ -24,7 +24,7 @@ public class RolValidator extends AuthValidator {
         if (super.doValidate(request)) { // Primero validamos el token
             String userRole = request.getUser().getRol(); // Obtenemos el rol del usuario desde el token
             for (Rols role : allowedRoles) { // Comparamos el rol del usuario con los roles permitidos
-                if (userRole == role.getString()) { // Si el rol del usuario es uno de los roles permitidos, se permite el acceso
+                if (userRole.equalsIgnoreCase(role.getString())) { // Si el rol del usuario es uno de los roles permitidos, se permite el acceso
                     return true; // Si el rol del usuario es uno de los roles permitidos, se permite el acceso
                 }
             }

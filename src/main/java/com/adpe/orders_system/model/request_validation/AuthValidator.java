@@ -5,9 +5,9 @@ import com.adpe.orders_system.DTO.CustomUser;
 import com.adpe.orders_system.util.JwtUtil;
 import com.adpe.orders_system.model.CustomRequest;
 import com.adpe.orders_system.error.UnauthorizedError;
-import org.springframework.stereotype.Component;
 
-@Component
+
+
 public class AuthValidator extends ValidationHandler {
 
     private final JwtUtil jwtUtil;
