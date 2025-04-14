@@ -65,24 +65,21 @@ jobs:
       
           print("Database $DBNAME initialized successfully.");
           EOF
-      
-
-
-
+      # Crear el archivo .env en tiempo de ejecución
+      - name: Generate .env file
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
+          echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
+          echo "DATABASE=${{ secrets.DATABASE }}" >> .env
+          echo "MONGO_USERNAME=${{ secrets.USERNAME }}" >> .env
+          echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
       # Construir y subir todas las imágenes usando Docker Compose
       - name: Build and Push Images
         run: |
-          docker compose build --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
-                               --build-arg MONGO_URI=${{ secrets.MONGO_URI }} \
-                               --build-arg REDIS_HOST=${{ secrets.REDIS_HOST }} \
-                               --build-arg REDIS_PORT=${{ secrets.REDIS_PORT }} \
-                               --build-arg REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
-                               --build-arg DOCKER_ENV=${{ secrets.DOCKER_ENV }} \
-                               --build-arg DATABASE=${{ secrets.DATABASE }} \
-                               --build-arg MONGO_USERNAME=${{ secrets.USERNAME }} \
-                               --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
-          docker compose push
-
+          docker compose build --push
       # Generar el archivo docker-compose.yml limpio
       - name: Generate docker-compose.yml
         run: |
