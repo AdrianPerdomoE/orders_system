@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @Tag(name = "Usuarios", description = "Endpoints para gestionar usuarios")
 @CrossOrigin(origins = "*")
 // @CrossOrigin(origins = "http://localhost:3000") // Uncomment this line to restrict CORS to a specific origin

@@ -3,14 +3,8 @@ spring:
     name: orders_system
 
   data:
-    mongodb:
-      uri: ${MONGO_URI}  # Secreto desde variables de entorno
-      
     redis:
-      host: ${REDIS_HOST}  # Secreto desde variables de entorno
-      port: ${REDIS_PORT}  # Secreto desde variables de entorno
-      password: ${REDIS_PASSWORD}  # Secreto desde variables de entorno
-      timeout: 60000
+      timeout: 100
 
 
 springdoc:

@@ -2,19 +2,24 @@ package com.adpe.orders_system.config;
 import com.adpe.orders_system.DTO.CustomQuery;
 import com.adpe.orders_system.DTO.Product;
 import com.adpe.orders_system.repository.ProductMongoRepository;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Configuration
-public class ProductSeeder {
+public class Seeder {
+    private final ProductMongoRepository productRepository;
+    // Constructor de la clase Seeder que recibe el repositorio de productos
+    public Seeder(ProductMongoRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
-    @Bean
-    CommandLineRunner seedProducts(ProductMongoRepository productRepository) {
-        return args -> {
+     // Método que se ejecuta al iniciar la aplicación para sembrar productos en la base de datos
+
+     public void seedProducts() {
+        
             // Verificar si ya hay productos en la base de datos
             CustomQuery query = new CustomQuery();// va a ser un query vacio para obtener todos los productos
             List<Product> existingProducts = productRepository.getMany(query);
@@ -54,6 +59,6 @@ public class ProductSeeder {
             } else {
                 System.out.println("Products already exist in the database. No seeding required.");
             }
-        };
+        
     }
 }

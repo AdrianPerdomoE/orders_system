@@ -1,52 +1,59 @@
 package com.adpe.orders_system.model;
 
 import com.adpe.orders_system.model.request_validation.ValidationHandler;
-import com.mongodb.lang.NonNull;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
+import com.mongodb.lang.NonNull;
 
 import java.util.Map;
-import java.util.function.Function;
 
 public class RequestValidationInterceptor implements HandlerInterceptor {
 
-    private final Map<EndpointKey, Function<HttpServletRequest, ValidationHandler>> pathValidationMap;
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+    private final Map<EndpointKey, ValidationHandler> pathValidationMap;
+    private final ValidationHandler defaultValidationHandler;
+  
 
-    public RequestValidationInterceptor(Map<EndpointKey, Function<HttpServletRequest, ValidationHandler>> pathValidationMap) {
+    public RequestValidationInterceptor(Map<EndpointKey, ValidationHandler> pathValidationMap, ValidationHandler defaultValidationHandler) {
         this.pathValidationMap = pathValidationMap;
+        this.defaultValidationHandler = defaultValidationHandler;
     }
+    public RequestValidationInterceptor(Map<EndpointKey, ValidationHandler> pathValidationMap) {
+        this.pathValidationMap = pathValidationMap;
+        this.defaultValidationHandler = ValidationChains.NO_VALIDATION_HANDLER(); // Asigna cadena vacia si no se proporciona un validador por defecto
+    }
+    
 
+
+    @SuppressWarnings("null")
     @Override
     @NonNull
-    public boolean preHandle(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull Object handler) {
-
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String requestMethod = request.getMethod();
         String requestPath = request.getRequestURI();
-
-        for (Map.Entry<EndpointKey, Function<HttpServletRequest, ValidationHandler>> entry : pathValidationMap.entrySet()) {
-            EndpointKey key = entry.getKey();
-
-            if (key.getMethod().equalsIgnoreCase(requestMethod) && pathMatcher.match(key.getPath(), requestPath)) {
-                // Coincidencia encontrada
-                Map<String, String> pathVariables = pathMatcher.extractUriTemplateVariables(key.getPath(), requestPath);
-                CustomRequest customRequest = new CustomRequest(request, null);
-
-                // Inyectamos las variables de ruta encontradas
-                for (Map.Entry<String, String> variable : pathVariables.entrySet()) {
-                    customRequest.setPathVariable(variable.getKey(), variable.getValue());
-                }
-
-                ValidationHandler validator = entry.getValue().apply(request);
-                validator.validate(customRequest);
-                request.setAttribute("customRequest", customRequest);
-                break;
-            }
-        }
-
+    
+        // Busca un validador para el path actual
+        ValidationHandler validationHandler = findValidationHandler(requestMethod, requestPath);
+    
+        // Crea el CustomRequest
+        CustomRequest customRequest = new CustomRequest(request);
+    
+        // Valida la solicitud
+        validationHandler.validate(customRequest);
+    
+        // Adjunta el CustomRequest al request
+        request.setAttribute("customRequest", customRequest);
+    
         return true;
     }
+    private ValidationHandler findValidationHandler(String requestMethod, String requestPath) {
+        return pathValidationMap.entrySet().stream()
+                .sorted((Map.Entry.comparingByKey()))
+                .filter(entry -> entry.getKey().matches(requestMethod, requestPath))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(defaultValidationHandler);
+    }
+    
+   
 }

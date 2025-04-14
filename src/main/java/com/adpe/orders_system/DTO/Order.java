@@ -1,5 +1,6 @@
 package com.adpe.orders_system.DTO;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -16,6 +17,6 @@ public class Order {
     public String userId;
     public List<OrderItem> products;
     public String status;
-    public String createdAt;
-    public String updatedAt;
+    public Date createdAt = new Date();
+    public Date updatedAt = new Date();
 }

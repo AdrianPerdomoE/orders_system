@@ -18,12 +18,11 @@ public class AuthValidator extends ValidationHandler {
 
     @Override
     protected boolean doValidate(CustomRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
+        String token = request.getJwtToken();
+        if (token == null || token.isEmpty()) {
             throw new UnauthorizedError("Missing or invalid Authorization header");
         }
-
-        String token = authHeader.substring(7);
         CustomUser user = jwtUtil.extractPayload(token);
 
         if (user == null || jwtUtil.isTokenExpired(token)) {

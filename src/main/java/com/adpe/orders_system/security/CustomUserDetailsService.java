@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Busca el usuario en la base de datos
         CustomQuery query = new CustomQuery();
-        QueryProperty queryProperty = new QueryProperty("username",Operator.EQUALS, username);
+        QueryProperty queryProperty = new QueryProperty("name",Operator.EQUALS, username);
         query.getProperties().add(queryProperty);
         CustomUser userEntity = userRepository.getOne(query);
         if (userEntity == null) {

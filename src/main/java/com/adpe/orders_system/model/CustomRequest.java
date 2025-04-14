@@ -4,6 +4,7 @@ import com.adpe.orders_system.DTO.CustomUser;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +17,7 @@ public class CustomRequest {
     private final HttpServletRequest rawRequest;
     private CustomUser authenticatedUser; // ahora puede cambiarse
     private final String clientIp;
+    private Object data; // se puede usar para almacenar cualquier objeto adicional
     private final Map<String, String> headers;
     private final Map<String, String[]> parameters;
     private String body; // se carga bajo demanda
@@ -25,7 +27,9 @@ public class CustomRequest {
         this.rawRequest = request;
         this.clientIp = extractClientIp(request);
         this.headers = extractHeaders(request);
+
         this.parameters = request.getParameterMap();
+        
     }
 
     public CustomRequest(HttpServletRequest request, CustomUser user) {
@@ -45,7 +49,7 @@ public class CustomRequest {
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String header = headerNames.nextElement();
-            headerMap.put(header, request.getHeader(header));
+            headerMap.put(header.toLowerCase(), request.getHeader(header)); // Normaliza a minúsculas
         }
         return headerMap;
     }
@@ -53,10 +57,12 @@ public class CustomRequest {
     // ================= Utilidades =================
 
     public String getHeader(String name) {
+        name = name.toLowerCase(); // Normaliza a minúsculas
         return headers.getOrDefault(name, null);
     }
 
     public boolean hasHeader(String name) {
+        name = name.toLowerCase(); // Normaliza a minúsculas
         return headers.containsKey(name);
     }
 
@@ -99,20 +105,26 @@ public class CustomRequest {
     // ================= Nuevos métodos =================
 
     // Leer el cuerpo como String (una sola vez)
-    public String getBody() {
-        if (body == null) {
-            try {
+  public String getBody() {
+    if (body == null) {
+        try {
+            if (rawRequest instanceof ContentCachingRequestWrapper wrapper) {
+                byte[] content = wrapper.getContentAsByteArray();
+                body = new String(content, StandardCharsets.UTF_8);
+            } else {
                 body = StreamUtils.copyToString(rawRequest.getInputStream(), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                body = null;
             }
+        } catch (IOException e) {
+            body = null;
         }
-        return body;
     }
+    return body;
+}
+
 
     // Extraer el token JWT
     public String getJwtToken() {
-        String authHeader = getHeader("Authorization");
+        String authHeader = getHeader("authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }

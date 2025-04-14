@@ -1,13 +1,17 @@
 package com.adpe.orders_system.model.request_validation;
 
+import com.adpe.orders_system.error.ValidationChainError;
 import com.adpe.orders_system.model.CustomRequest;
 
 public class SimpleDataSanatizeValidator extends DataSanatizeValidator{
 
     @Override
-    protected boolean doValidate(CustomRequest request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'doValidate'");
+    public boolean doValidate(CustomRequest request) {
+
+        if (request.getBody() == null) {
+            throw new ValidationChainError("Data is null.");
+        }
+        return true;
     }
 
 

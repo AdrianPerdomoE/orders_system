@@ -26,6 +26,7 @@ public class CustomQuery {
         public int limit; // Limit for the number of results, by default is not set
         @Nullable
         public int offset; // Offset for pagination of results, by default is not set
+
 } 
 
 

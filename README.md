@@ -19,4 +19,72 @@
 
 # ¿ Comó utilizar la implementación?
 > Puedes acceder de manera sencilla a la solución implementada sin necesidad de clonar el respositorio, simplemente entra en el release: [🔗 Docker Compose Release]( https://github.com/AdrianPerdomoE/orders_system/releases), ahi encontraras el archivo docker-compose.yml, asegurate de tener docker instalado en tu maquina, corre el comando y una vez montadas las imagenes y los contenedores esten funcionando, podras acceder a la documentación de la API en [🔗Swagger ](http://localhost:8080/swagger-ui/index.html)
- 
+>  Tambien puedes usar el comando docker-compose up -- build en la ruta raiz del proyecto para montar las imagenes pero deberas utilizar tus propios valores secretos de configuracion, podras encontrar que valores requires utilizar en el archivo envTemplate.text  y deberas crear un archivo de inicializacion para el mongo si lo trabajaras con la imagen local, sigue el siguiente formato:
+****
+
+
+```javascript
+db = db.getSiblingDB('admin');
+          if (db.system.users.find({ user: "Admin" }).count() === 0) {
+
+            db.createUser({
+              user: "Admin",
+              pwd: "contraseña",
+              roles: [
+                { role: "readWrite", db: "orders_system" },
+                { role: "dbAdmin", db: "orders_system" }
+              ]
+            });
+            print("User 'Admin' created successfully.");
+          } else {
+
+            db.updateUser("Admin", {
+              roles: [
+                { role: "readWrite", db: "orders_system" },
+                { role: "dbAdmin", db: "orders_system" }
+              ]
+            });
+            print("User 'Admin' already exists. Roles updated successfully.");
+          }
+
+
+          db = db.getSiblingDB('orders_system');
+
+
+          if (!db.getCollectionNames().includes("products")) {
+            db.createCollection("products");
+            print("Collection 'products' created.");
+          }
+
+          if (!db.getCollectionNames().includes("orders")) {
+            db.createCollection("orders");
+            print("Collection 'orders' created.");
+          }
+
+          if (!db.getCollectionNames().includes("users")) {
+            db.createCollection("users");
+            print("Collection 'users' created.");
+          }
+
+          print("Database 'orders_system' initialized successfully.");
+```
+
+
+***
+
+~~~
+En swagger estará abierto el endpoint para crear usuarios en el sistema, eso para poder realizar pruebas, estará abierta la autenticación para los endpoints que requieren validación por roles, a continuación listo los roles disponibles:
+~~~
+- admin
+- customer  
+~~~
+Por defecto, iran unos productos creados en el sistema para poder realizar pruebas, se pueden agregar más, eliminar los incluidos, pero tener en cuenta que si el sistema de la app detecta que no hay ningun producto volvera a generar los por defecto. Tambien, importante para las Queries, los operadores posibles son:
+~~~
+- equals
+-  not_equals
+-   greater_than
+-  less_than
+- in
+- not_in
+- like
+- between

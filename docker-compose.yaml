@@ -5,22 +5,62 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        SECRET_KEY: ${SECRET_KEY}
+        MONGO_URI: ${MONGO_URI}
+        REDIS_HOST: ${REDIS_HOST}
+        REDIS_PORT: ${REDIS_PORT}
+        REDIS_PASSWORD: ${REDIS_PASSWORD}
     image: ghcr.io/adrianperdomoe/orders_system/app:latest
+    depends_on:
+      - mongodb
+      - redis
+    container_name: app
     ports:
       - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
 
   mongodb:
     build:
       context: ./mongoDB
       dockerfile: Dockerfile
+      args:
+        DATABASE: ${DATABASE}
+        MONGO_USERNAME: ${MONGO_USERNAME}
+        MONGO_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+    restart: always
     image: ghcr.io/adrianperdomoe/orders_system/mongodb:latest
+    container_name: mongodb
     ports:
       - "27017:27017"
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_DATABASE=${DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
 
   redis:
     build:
       context: ./redis
       dockerfile: Dockerfile
+      args:
+        REDIS_PASSWORD: ${REDIS_PASSWORD}
     image: ghcr.io/adrianperdomoe/orders_system/redis:latest
+    container_name: redis
     ports:
       - "6379:6379"
+    env_file:
+      - .env
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+volumes:
+  mongo-data:

@@ -40,7 +40,8 @@ public class MongoQueryBuilder {
     }
 
     public MongoQueryBuilder withOrder(String field, String direction) {
-        if (field != null && direction != null) {
+        if (field != null) {
+            direction = direction == null ? "asc" : direction.toLowerCase();
             Sort.Direction sortDir = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
             mongoQuery.with(Sort.by(sortDir, field));
         }

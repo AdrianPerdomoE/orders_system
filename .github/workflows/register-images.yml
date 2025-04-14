@@ -21,6 +21,57 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
+      # Generar el archivo init-mongo.js
+      - name: Generate init-mongo.js
+        run: |
+          echo "Generating init-mongo.js..."
+          cat <<EOF > ./mongoDB/init-mongo.js
+          db = db.getSiblingDB('admin');
+          if (db.system.users.find({ user: ${{secrets.USERNAME}} }).count() === 0) {
+
+            db.createUser({
+              user: ${{ secrets.USERNAME }},
+              pwd: ${{ secrets.MONGO_PASSWORD }},
+              roles: [
+                { role: "readWrite", db: ${{secrets.DATABASE}} },
+                { role: "dbAdmin", db:  ${{secrets.DATABASE}} }
+              ]
+            });
+            
+          } else {
+
+            db.updateUser("Admin", {
+              roles: [
+                { role: "readWrite", db:  ${{secrets.DATABASE}} },
+                { role: "dbAdmin", db:  ${{secrets.DATABASE}} }
+              ]
+            });
+          
+          }
+
+
+          db = db.getSiblingDB( ${{secrets.DATABASE}});
+
+
+          if (!db.getCollectionNames().includes("products")) {
+            db.createCollection("products");
+            print("Collection 'products' created.");
+          }
+
+          if (!db.getCollectionNames().includes("orders")) {
+            db.createCollection("orders");
+            print("Collection 'orders' created.");
+          }
+
+          if (!db.getCollectionNames().includes("users")) {
+            db.createCollection("users");
+            print("Collection 'users' created.");
+          }
+
+          print("Database  ${{secrets.DATABASE}} initialized successfully.");
+          EOF
+
+
 
       # Construir y subir todas las imágenes usando Docker Compose
       - name: Build and Push Images
@@ -32,7 +83,7 @@ jobs:
                                --build-arg REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
                                --build-arg DOCKER_ENV=${{ secrets.DOCKER_ENV }} \
                                --build-arg DATABASE=${{ secrets.DATABASE }} \
-                               --build-arg USERNAME=${{ secrets.USERNAME }} \
+                               --build-arg MONGO_USERNAME=${{ secrets.USERNAME }} \
                                --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
           docker compose push
 
@@ -41,22 +92,34 @@ jobs:
         run: |
           cat <<EOF > docker-compose.yml
           version: '3.8'
-
+      
           services:
             app:
               image: ghcr.io/adrianperdomoe/orders_system/app:latest
+              depends_on:
+                - mongodb
+                - redis
+              container_name: app
               ports:
                 - "8080:8080"
-
+      
             mongodb:
               image: ghcr.io/adrianperdomoe/orders_system/mongodb:latest
+              volumes:
+                - mongo-data:/data/db
+              restart: always
+              container_name: mongodb
               ports:
                 - "27017:27017"
-
+      
             redis:
               image: ghcr.io/adrianperdomoe/orders_system/redis:latest
+              container_name: redis
               ports:
                 - "6379:6379"
+      
+          volumes:
+            mongo-data:
           EOF
 
       # Subir el archivo docker-compose.yml como artefacto

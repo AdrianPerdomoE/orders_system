@@ -1,5 +1,8 @@
 package com.adpe.orders_system.model.query;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Operator {
     EQUALS("equals"),
     NOT_EQUALS("not_equals"),
@@ -16,10 +19,12 @@ public enum Operator {
         this.string = string;
     }
 
+    @JsonValue
     public String getString() {
-        return string;
+        return string; // Devuelve el valor como se espera en el JSON
     }
 
+    @JsonCreator
     public static Operator fromString(String string) {
         for (Operator operator : Operator.values()) {
             if (operator.string.equalsIgnoreCase(string)) {

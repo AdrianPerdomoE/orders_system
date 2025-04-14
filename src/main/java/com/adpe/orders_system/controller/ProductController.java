@@ -2,8 +2,11 @@ package com.adpe.orders_system.controller;
 
 import com.adpe.orders_system.DTO.Product;
 import com.adpe.orders_system.error.UnExpectedArgumentError;
+import com.adpe.orders_system.model.CachedData;
+import com.adpe.orders_system.model.CustomRequest;
 import com.adpe.orders_system.DTO.CustomQuery;
 import com.adpe.orders_system.DTO.ResponseDTO;
+import com.adpe.orders_system.service.CacheService;
 import com.adpe.orders_system.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,16 +19,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
 @Tag(name = "Productos", description = "Endpoints para gestionar productos")
 @CrossOrigin(origins = "*")
 // @CrossOrigin(origins = "http://localhost:3000") // Uncomment this line to restrict CORS to a specific origin
 public class ProductController extends AbstractController<Product> {
 
     private final ProductService productService;
-
-    public ProductController(ProductService productService) {
+    private final CacheService cacheService;
+    public ProductController(ProductService productService, CacheService cacheService) {
         this.productService = productService;
+        this.cacheService = cacheService;
     }
 
     @Override
@@ -34,7 +38,7 @@ public class ProductController extends AbstractController<Product> {
     }
 
     @PostMapping("/")
-    @Operation(summary = "Crear producto", description = "Crear un nuevo producto en el sistema de ordenes")
+    @Operation(summary = "Crear producto", description = "Crear un nuevo producto en el sistema de ordenes, tiene validacion de fuerza bruta , de rol de administrador y de sanitizacion de datos")
     @Override
     public ResponseDTO<Product> create(@Valid @RequestBody Product requestBody) {
         if (requestBody.get_id() != null) {
@@ -51,10 +55,15 @@ public class ProductController extends AbstractController<Product> {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener producto", description = "Obtener un producto por su ID")
+    @Operation(summary = "Obtener producto", description = "Obtener un producto por su ID, tiene validacion de fuerza bruta , de rol de administrador o cliente y de cache")
     @Override
-    public ResponseDTO<Product> getById(@PathVariable String id) {
+    public ResponseDTO<Product> getById(@PathVariable String id ) {
+
+        
         Product product = getService().getById(id);
+        CachedData cachedData = new CachedData(200, "Product found", true, product);
+        this.cacheService.saveCachedData(this.cacheService.generateCacheKey("GET", "/api/products/", id), cachedData);
+
         return new ResponseDTO<>(true, HttpStatus.OK.value(), "Product found", product);
     }
 
@@ -66,6 +75,8 @@ public class ProductController extends AbstractController<Product> {
         Product product = getService().getOne(requestBody);
         return new ResponseDTO<>(true, HttpStatus.OK.value(), "Product found", product);
     }
+
+    
 
     @PostMapping("/query/many")
     @Operation(summary = "Obtener productos", description = "Obtener productos por un query")
