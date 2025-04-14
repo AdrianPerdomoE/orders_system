@@ -25,51 +25,47 @@ jobs:
       - name: Generate init-mongo.js
         run: |
           echo "Generating init-mongo.js..."
+          USERNAME=${{ secrets.USERNAME }}
+          PASSWORD=${{ secrets.MONGO_PASSWORD }}
+          DBNAME=${{ secrets.DATABASE }}
+      
           cat <<EOF > ./mongoDB/init-mongo.js
           db = db.getSiblingDB('admin');
-          if (db.system.users.find({ user: ${{secrets.USERNAME}} }).count() === 0) {
-
+          if (db.system.users.find({ user: "$USERNAME" }).count() === 0) {
             db.createUser({
-              user: ${{ secrets.USERNAME }},
-              pwd: ${{ secrets.MONGO_PASSWORD }},
+              user: "$USERNAME",
+              pwd: "$PASSWORD",
               roles: [
-                { role: "readWrite", db: ${{secrets.DATABASE}} },
-                { role: "dbAdmin", db:  ${{secrets.DATABASE}} }
+                { role: "readWrite", db: "$DBNAME" },
+                { role: "dbAdmin", db: "$DBNAME" }
               ]
             });
-            
           } else {
-
-            db.updateUser("Admin", {
+            db.updateUser("$USERNAME", {
               roles: [
-                { role: "readWrite", db:  ${{secrets.DATABASE}} },
-                { role: "dbAdmin", db:  ${{secrets.DATABASE}} }
+                { role: "readWrite", db: "$DBNAME" },
+                { role: "dbAdmin", db: "$DBNAME" }
               ]
             });
-          
           }
-
-
-          db = db.getSiblingDB( ${{secrets.DATABASE}});
-
-
+      
+          db = db.getSiblingDB("$DBNAME");
+      
           if (!db.getCollectionNames().includes("products")) {
             db.createCollection("products");
-            print("Collection 'products' created.");
           }
-
+      
           if (!db.getCollectionNames().includes("orders")) {
             db.createCollection("orders");
-            print("Collection 'orders' created.");
           }
-
+      
           if (!db.getCollectionNames().includes("users")) {
             db.createCollection("users");
-            print("Collection 'users' created.");
           }
-
-          print("Database  ${{secrets.DATABASE}} initialized successfully.");
+      
+          print("Database $DBNAME initialized successfully.");
           EOF
+      
 
 
 
