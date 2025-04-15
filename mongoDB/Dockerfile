@@ -10,12 +10,12 @@ COPY init-mongo.js /docker-entrypoint-initdb.d/init-mongo.js
 
 # Define los argumentos de construcción
 ARG DATABASE
-ARG USERNAME
+ARG MONGO_USERNAME
 ARG MONGO_PASSWORD
 
 # Configura las variables de entorno para que estén disponibles en tiempo de ejecución
 ENV MONGO_INITDB_DATABASE=${DATABASE}
-ENV MONGO_INITDB_ROOT_USERNAME=${USERNAME}
+ENV MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
 ENV MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
 # Da permisos de ejecución al script
 
